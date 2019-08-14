@@ -23,11 +23,11 @@ class Convert2Text:
     def process_item(self, item, spider):
         paragraphs = convert(item['content'])
         path = textpath(item['filepath'])
-        with path.open('w') as wio:
-            wio.write("\n".join(paragraphs))
+        # with path.open('w') as wio:
+        #  wio.write("\n".join(paragraphs))
         with entries_text().open('a') as wio:
             wio.write('\n'.join(paragraphs) + "\n")
-        return Text(filepath=path)
+        return item
 
 
 def convert(html):
@@ -38,7 +38,10 @@ def convert(html):
     articlebody = articlestr.split(bib)[0]
     sel = Selector(text=articlebody)
     paragraphs = []
+    noise = ['"', '(', ')', '[', ']', ',', '(', ')', '.', "'", ":", ";", "\n", "—", "?", "!", "“", "”", "-"]
     for p in sel.xpath('(//p|//blockquote|//h1|//h2|//h3)'):
         string = BeautifulSoup(p.extract(), features="lxml").get_text()
-        paragraphs.append(string.replace("\n", " ").strip())
+        for n in noise:
+            string = string.replace(n, " ")
+        paragraphs.append(string.lower().strip())
     return paragraphs
