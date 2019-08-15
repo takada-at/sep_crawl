@@ -9,6 +9,8 @@ from sep.items import Html, Text
 from sep.path import url2path, textpath, entries_text
 from scrapy.selector import Selector
 
+import re
+
 
 class SavePipeline:
     def process_item(self, item, spider):
@@ -41,7 +43,13 @@ def convert(html):
     noise = ['"', '(', ')', '[', ']', ',', '(', ')', '.', "'", ":", ";", "\n", "—", "?", "!", "“", "”", "-"]
     for p in sel.xpath('(//p|//blockquote|//h1|//h2|//h3)'):
         string = BeautifulSoup(p.extract(), features="lxml").get_text()
-        for n in noise:
-            string = string.replace(n, " ")
-        paragraphs.append(string.lower().strip())
+        tokens = tokenizer(string.lower())
+        paragraphs.append(" ".join(tokens))
     return paragraphs
+
+
+token_pattern = r"(?u)\b\w\w+\b"
+token_reg = re.compile(token_pattern)
+
+def tokenizer(doc):
+    return token_reg.findall(doc)
