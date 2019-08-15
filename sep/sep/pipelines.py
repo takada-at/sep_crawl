@@ -10,6 +10,10 @@ from sep.path import url2path, textpath, entries_text
 from scrapy.selector import Selector
 
 import re
+import spacy
+
+
+nlp = spacy.load('en')
 
 
 class SavePipeline:
@@ -39,17 +43,28 @@ def convert(html):
     bib = article.xpath('//h2[starts-with(., "Bibliography")]').extract()[0]
     articlebody = articlestr.split(bib)[0]
     sel = Selector(text=articlebody)
-    paragraphs = []
-    noise = ['"', '(', ')', '[', ']', ',', '(', ')', '.', "'", ":", ";", "\n", "—", "?", "!", "“", "”", "-"]
-    for p in sel.xpath('(//p|//blockquote|//h1|//h2|//h3)'):
+    text = BeautifulSoup(sel.extract(), features="lxml").get_text()
+    tokens = nlp(text)
+    result = []
+    ignores = {',', '.', ':', ';', '(', ')', '“', '“', '”', '"', "'", "-", "—", "[", "]", "!", "?", "{", "}", "’", "‘"}
+    for p in sel.xpath('(//p|//blockquote)'):
         string = BeautifulSoup(p.extract(), features="lxml").get_text()
-        tokens = tokenizer(string.lower())
-        paragraphs.append(" ".join(tokens))
-    return paragraphs
+        string = string.replace('\n', ' ').lower().strip()
+        tokens = nlp(string)
+        for sent in tokens.sents:
+            stokens = [t.text for t in sent if t.text not in ignores]
+            s = " ".join(stokens).strip()
+            for i in ignores:
+                s = s.replace(i, "")
+            if not s:
+                continue
+            result.append(s)
+    return result
 
 
 token_pattern = r"(?u)\b\w\w+\b"
 token_reg = re.compile(token_pattern)
+
 
 def tokenizer(doc):
     return token_reg.findall(doc)
