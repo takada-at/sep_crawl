@@ -28,6 +28,8 @@ class EntrySpider(Spider):
         entriespath = "//div[@id='content']/*/li/a[contains(@href,'entries/')]"
         entries = response.xpath(entriespath)
         urls = []
+        if os.environ.get('SEP_DEBUG'):
+            entries = entries[:30]
         for entry in entries:
             #title = entry.xpath("strong/text()").extract()[0]
             link  = entry.xpath("@href").extract()[0]

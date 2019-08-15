@@ -47,18 +47,22 @@ def convert(html):
     tokens = nlp(text)
     result = []
     ignores = {',', '.', ':', ';', '(', ')', '“', '“', '”', '"', "'", "-", "—", "[", "]", "!", "?", "{", "}", "’", "‘"}
+    paragraphs = []
     for p in sel.xpath('(//p|//blockquote)'):
         string = BeautifulSoup(p.extract(), features="lxml").get_text()
         string = string.replace('\n', ' ').lower().strip()
-        tokens = nlp(string)
-        for sent in tokens.sents:
-            stokens = [t.text for t in sent if t.text not in ignores]
-            s = " ".join(stokens).strip()
-            for i in ignores:
-                s = s.replace(i, "")
-            if not s:
-                continue
-            result.append(s)
+        if not string:
+            continue
+        paragraphs.append(string)
+    tokens = nlp("\n".join(paragraphs))
+    for sent in tokens.sents:
+        stokens = [t.text for t in sent if t.text not in ignores]
+        s = " ".join(stokens).strip()
+        for i in ignores:
+            s = s.replace(i, "")
+        if not s:
+            continue
+        result.append(s)
     return result
 
 
