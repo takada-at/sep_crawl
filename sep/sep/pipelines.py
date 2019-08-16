@@ -36,7 +36,7 @@ def convert_and_save(item):
     paragraphs = convert(item['content'])
     path = textpath(item['link'])
     with path.open('w') as wio:
-      wio.write("\n".join(paragraphs))
+      wio.write("\n".join(paragraphs) + "\n")
 
 
 def convert(html):
