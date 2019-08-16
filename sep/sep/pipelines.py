@@ -27,13 +27,15 @@ class SavePipeline:
 
 class Convert2Text:
     def process_item(self, item, spider):
-        paragraphs = convert(item['content'])
-        path = textpath(item['filepath'])
-        # with path.open('w') as wio:
-        #  wio.write("\n".join(paragraphs))
-        with entries_text().open('a') as wio:
-            wio.write('\n'.join(paragraphs) + "\n")
+        convert_and_save(item)
         return item
+
+
+def convert_and_save(item):
+    paragraphs = convert(item['content'])
+    path = textpath(item['filepath'])
+    with path.open('w') as wio:
+      wio.write("\n".join(paragraphs))
 
 
 def convert(html):
@@ -56,7 +58,10 @@ def convert(html):
         paragraphs.append(string)
     tokens = nlp("\n".join(paragraphs))
     for sent in tokens.sents:
-        stokens = [t.text for t in sent if t.text not in ignores]
+        stokens = [t.text for t in sent]
+        stokens = [t for t in stokens if t not in ignores and t]
+        if not stokens:
+            continue
         s = " ".join(stokens).strip()
         for i in ignores:
             s = s.replace(i, "")

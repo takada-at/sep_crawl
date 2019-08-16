@@ -65,7 +65,7 @@ COOKIES_ENABLED = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'sep.pipelines.SavePipeline': 100,
+    # 'sep.pipelines.SavePipeline': 100,
     'sep.pipelines.Convert2Text': 200,
 }
 
