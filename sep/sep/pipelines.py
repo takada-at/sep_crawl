@@ -22,7 +22,8 @@ class SavePipeline:
         with fpath.open('w') as wio:
             content = item['content']
             wio.write(content)
-        return Html(filepath=fpath, content=content)
+        return Html(filepath=fpath, content=content,
+                    link=item['link'])
 
 
 class Convert2Text:
@@ -33,7 +34,7 @@ class Convert2Text:
 
 def convert_and_save(item):
     paragraphs = convert(item['content'])
-    path = textpath(item['filepath'])
+    path = textpath(item['link'])
     with path.open('w') as wio:
       wio.write("\n".join(paragraphs))
 

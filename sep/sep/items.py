@@ -14,6 +14,7 @@ class EntryItem(Item):
 class Html(Item):
     content = Field()
     filepath = Field()
+    link = link
 
 
 class Text(Item):

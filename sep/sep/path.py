@@ -12,11 +12,11 @@ def url2path(link):
     return path / filename
 
 
-def textpath(filepath):
+def textpath(link):
     path = (root_dir / 'data/sep/text').resolve()
     if not path.exists():
         path.mkdir(parents=True)
-    filename = filepath.with_suffix('.txt')
+    filename = link.split('/')[-2] + '.txt'
     return path / (filename.name)
 
 
