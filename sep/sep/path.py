@@ -17,7 +17,7 @@ def textpath(link):
     if not path.exists():
         path.mkdir(parents=True)
     filename = link.split('/')[-2] + '.txt'
-    return path / (filename.name)
+    return path / filename
 
 
 def entries_text():
